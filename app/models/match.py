@@ -32,8 +32,13 @@ class Match(Base):
 
     kickoff_utc: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
     status: Mapped[MatchStatus] = mapped_column(
-        Enum(MatchStatus, name="match_status"), default=MatchStatus.SCHEDULED
+        Enum(MatchStatus, name="match_status", values_callable=lambda cls: [e.value for e in cls]),
+        default=MatchStatus.SCHEDULED,
     )
+    """values_callable é necessário porque, por padrão, o SQLAlchemy salva o
+    NOME do enum Python (ex: 'SCHEDULED'), mas o tipo ENUM criado no Postgres
+    pela migration usa os VALORES em minúsculo (ex: 'scheduled') — sem isso,
+    qualquer insert falha com 'invalid input value for enum match_status'."""
     venue: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
     home_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
