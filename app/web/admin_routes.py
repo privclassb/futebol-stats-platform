@@ -9,7 +9,13 @@ from sqlalchemy import func, select
 
 from app.config import get_settings
 from app.db.session import async_session_factory
+from app.models.league import League
 from app.models.match import Match
+from app.models.match_stats import MatchTeamStats
+from app.models.odds import OddsSnapshot, ProbabilityEstimate
+from app.models.player import Player
+from app.models.player_stats import PlayerMatchStats
+from app.models.team import Team
 from app.providers.api_football.client import ApiFootballClient
 from app.services.ingestion import sync_daily_fixtures
 
@@ -51,3 +57,28 @@ async def seed_dev_data(token: str = "") -> str:
 
     await seed()
     return "Dados de exemplo criados com sucesso."
+
+
+@router.get("/wipe", response_class=PlainTextResponse)
+async def wipe(token: str = "", confirm: str = "") -> str:
+    """Apaga TODOS os dados (times, ligas, jogos, estatísticas) pra recomeçar
+    do zero — usado pra limpar os dados de exemplo antes de coletar dados
+    reais. Exige ?confirm=sim, pra evitar apagar tudo sem querer."""
+    _check_token(token)
+    if confirm != "sim":
+        return "Isso apaga TODOS os dados. Pra confirmar, adicione &confirm=sim no final do link."
+
+    async with async_session_factory() as session:
+        for model in (
+            OddsSnapshot,
+            ProbabilityEstimate,
+            PlayerMatchStats,
+            MatchTeamStats,
+            Match,
+            Player,
+            Team,
+            League,
+        ):
+            await session.execute(model.__table__.delete())
+        await session.commit()
+    return "Banco de dados zerado com sucesso."
