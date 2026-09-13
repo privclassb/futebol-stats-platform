@@ -6,13 +6,9 @@ services:
     envVars:
       - key: API_FOOTBALL_KEY
         sync: false
+      - key: DATABASE_URL
+        sync: false
+        # Cole aqui a "Connection string" do seu banco Neon (neon.tech) —
+        # veja o README para o passo a passo.
       - key: DATABASE_SSL
         value: "true"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: futebol-stats-db
-          property: connectionString
-
-databases:
-  - name: futebol-stats-db
-    plan: free

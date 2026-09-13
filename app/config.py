@@ -1,4 +1,5 @@
 from functools import lru_cache
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,15 +20,22 @@ class Settings(BaseSettings):
 
     @field_validator("database_url")
     @classmethod
-    def _use_asyncpg_driver(cls, value: str) -> str:
-        """Provedores de hospedagem (Render, Heroku, etc.) costumam entregar a
-        URL do Postgres como 'postgres://' ou 'postgresql://' — o SQLAlchemy
-        async precisa do driver explícito 'postgresql+asyncpg://'."""
+    def _normalize_for_asyncpg(cls, value: str) -> str:
+        """Provedores de hospedagem (Render, Neon, Heroku, etc.) costumam
+        entregar a URL do Postgres como 'postgres://' ou 'postgresql://', às
+        vezes com '?sslmode=require' — isso é sintaxe do libpq/psycopg2, e o
+        driver asyncpg não entende esse parâmetro (usamos DATABASE_SSL pra
+        isso). Aqui a gente troca o driver e remove esse parâmetro se vier.
+        """
         if value.startswith("postgres://"):
-            return value.replace("postgres://", "postgresql+asyncpg://", 1)
-        if value.startswith("postgresql://"):
-            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
-        return value
+            value = value.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif value.startswith("postgresql://") and not value.startswith("postgresql+asyncpg://"):
+            value = value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+        libpq_only_params = {"sslmode", "channel_binding"}
+        parts = urlsplit(value)
+        query = [(k, v) for k, v in parse_qsl(parts.query) if k not in libpq_only_params]
+        return urlunsplit(parts._replace(query=urlencode(query)))
 
 
 @lru_cache

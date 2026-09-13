@@ -9,16 +9,18 @@ Plataforma de análises estatísticas para apostas esportivas em futebol (MVP).
 - Dashboard web com lista de jogos do dia, filtros (mais escanteios, mais cartões) e página de detalhe do confronto.
 - Estrutura de banco pronta para odds/probabilidades (fase 2) — hoje exibida com dados de exemplo até um provedor de odds pago ser configurado.
 
-## Colocar no ar de graça (Render)
+## Colocar no ar de graça (Render + Neon)
 
-Este repositório já vem com um `render.yaml` pronto (deploy "Blueprint"):
+O site fica no **Render** (grátis) e o banco de dados no **Neon** (grátis e sem
+expirar, ao contrário do Postgres grátis do próprio Render):
 
-1. Crie uma conta em https://render.com (dá pra entrar direto com o GitHub, sem cartão de crédito).
-2. No painel, clique em **New +** → **Blueprint**.
-3. Escolha o repositório `futebol-stats-platform`.
-4. O Render vai ler o `render.yaml` sozinho e pedir só o valor de `API_FOOTBALL_KEY` — cole sua chave da API-Football.
-5. Clique em **Apply**/**Create**. O banco de dados Postgres é criado automaticamente e já fica conectado.
-6. Espere o build terminar (alguns minutos) e acesse a URL que o Render mostrar (algo como `https://futebol-stats-platform.onrender.com`).
+1. Crie o banco em https://neon.tech (login com GitHub) e copie a **connection string** do projeto criado.
+2. No Render, crie um **Web Service** novo apontando pro repositório `futebol-stats-platform` (o Render detecta o `Dockerfile` sozinho).
+3. Em "Environment Variables", adicione:
+   - `API_FOOTBALL_KEY` → sua chave da API-Football
+   - `DATABASE_URL` → a connection string copiada do Neon
+   - `DATABASE_SSL` → `true`
+4. Crie o serviço e espere o build terminar (alguns minutos). A URL final aparece no topo da página do serviço (algo como `https://futebol-stats-platform.onrender.com`).
 
 No plano grátis, o site "dorme" depois de alguns minutos sem uso — a primeira visita depois de um tempo parado pode demorar ~30-50 segundos pra carregar, é normal.
 
