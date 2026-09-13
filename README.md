@@ -20,15 +20,15 @@ expirar, ao contrário do Postgres grátis do próprio Render):
    - `API_FOOTBALL_KEY` → sua chave da API-Football
    - `DATABASE_URL` → a connection string copiada do Neon
    - `DATABASE_SSL` → `true`
+   - `ADMIN_TOKEN` → qualquer texto secreto (usado no próximo passo)
 4. Crie o serviço e espere o build terminar (alguns minutos). A URL final aparece no topo da página do serviço (algo como `https://futebol-stats-platform.onrender.com`).
 
-No plano grátis, o site "dorme" depois de alguns minutos sem uso — a primeira visita depois de um tempo parado pode demorar ~30-50 segundos pra carregar, é normal.
+No plano grátis, o site "dorme" depois de alguns minutos sem uso — a primeira visita depois de um tempo parado pode demorar ~30-50 segundos pra carregar, é normal. Isso também significa que o job diário automático só roda se o site estiver acordado às 05:00 UTC — no plano grátis, é mais confiável disparar a coleta manualmente (próximo item) sempre que quiser dados atualizados.
 
-Para ver o dashboard com dados sem esperar a coleta automática rodar, abra o **Shell** do serviço no painel do Render e rode:
+O plano grátis do Render não dá acesso a terminal, então a coleta de dados e o "seed" de exemplo são acionados abrindo uma URL no navegador (protegida pelo `ADMIN_TOKEN` que você configurou):
 
-```bash
-python -m scripts.seed_dev_data
-```
+- Buscar jogos reais de hoje: `https://SEU-SITE.onrender.com/admin/sync-today?token=SEU_ADMIN_TOKEN`
+- Popular com dados de exemplo (só funciona se o banco ainda estiver vazio): `https://SEU-SITE.onrender.com/admin/seed?token=SEU_ADMIN_TOKEN`
 
 ## Rodando localmente (alternativa)
 

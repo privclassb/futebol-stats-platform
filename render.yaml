@@ -12,3 +12,5 @@ services:
         # veja o README para o passo a passo.
       - key: DATABASE_SSL
         value: "true"
+      - key: ADMIN_TOKEN
+        generateValue: true

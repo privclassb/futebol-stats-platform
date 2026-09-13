@@ -13,6 +13,10 @@ class Settings(BaseSettings):
 
     odds_api_key: str = ""
 
+    admin_token: str = ""
+    """Token simples pra proteger as rotas /admin/* (coleta manual, seed) —
+    necessário porque o plano grátis de hospedagem não dá acesso a terminal."""
+
     database_url: str = "postgresql+asyncpg://futebol:futebol@db:5432/futebol_stats"
     database_ssl: bool = False
     """Ative (DATABASE_SSL=true) ao rodar em hospedagens que exigem SSL na
