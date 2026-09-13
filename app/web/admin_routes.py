@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 
 from app.config import get_settings
 from app.db.session import async_session_factory
-from app.models.league import League
+from app.models.match import Match
 from app.providers.api_football.client import ApiFootballClient
 from app.services.ingestion import sync_daily_fixtures
 
@@ -38,13 +38,14 @@ async def sync_today(token: str = "") -> str:
 @router.get("/seed", response_class=PlainTextResponse)
 async def seed_dev_data(token: str = "") -> str:
     """Popula o banco com dados de exemplo (ver scripts/seed_dev_data.py).
-    Só roda se o banco ainda estiver vazio, pra evitar duplicar dados se o
-    link for aberto mais de uma vez."""
+    Só roda se ainda não houver nenhuma partida no banco, pra evitar duplicar
+    dados se o link for aberto mais de uma vez (times/ligas já existentes,
+    de uma ingestão real anterior, são reaproveitados normalmente)."""
     _check_token(token)
     async with async_session_factory() as session:
-        already_seeded = (await session.execute(select(func.count()).select_from(League))).scalar_one() > 0
+        already_seeded = (await session.execute(select(func.count()).select_from(Match))).scalar_one() > 0
     if already_seeded:
-        return "Já existem dados no banco — nada foi alterado."
+        return "Já existem partidas no banco — nada foi alterado."
 
     from scripts.seed_dev_data import seed
 

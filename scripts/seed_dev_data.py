@@ -11,10 +11,10 @@ from datetime import datetime, timedelta, timezone
 
 from app.db.session import async_session_factory
 from app.leagues import LEAGUES
-from app.models.league import League
 from app.models.match import Match, MatchStatus
 from app.models.match_stats import MatchTeamStats
 from app.models.team import Team
+from app.services.ingestion import ensure_league
 
 TEAM_NAMES = {
     "premier_league": ["Manchester United", "Liverpool", "Arsenal", "Chelsea"],
@@ -31,14 +31,10 @@ async def seed() -> None:
         now = datetime.now(timezone.utc)
 
         for idx, league_config in enumerate(LEAGUES):
-            league = League(
-                api_football_id=league_config.api_football_id,
-                name=league_config.name,
-                country=league_config.country,
-                slug=league_config.slug,
-            )
-            session.add(league)
-            await session.flush()
+            # Reaproveita a liga se ela já existir (ex: criada por uma
+            # ingestão real anterior) em vez de tentar duplicar — evita
+            # violar a constraint de api_football_id único.
+            league = await ensure_league(session, league_config)
 
             names = TEAM_NAMES[league_config.slug]
             teams = []
