@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ home_team.name }} x {{ away_team.name }} — Futebol Stats{% endblock %}
+{% block body %}
+<header class="top">
+  <a class="back-link" href="/">&larr; Voltar aos jogos do dia</a>
+  <h1>{{ home_team.name }} x {{ away_team.name }}</h1>
+  <p>{{ league.name if league else '' }} · {{ match.kickoff_utc.strftime('%d/%m/%Y %H:%M UTC') }}</p>
+</header>
+<main>
+  <section>
+    <h2>Estatísticas — últimos 5 jogos (qualquer competição)</h2>
+    <div class="stats-grid">
+      {% for team, form in [(home_team, home_recent), (away_team, away_recent)] %}
+        <div class="stats-card">
+          <h3>{{ team.name }}</h3>
+          {% if form.games_counted == 0 %}
+            <p class="meta">Sem jogos finalizados suficientes no histórico ainda.</p>
+          {% else %}
+            <dl>
+              <dt>Gols marcados / sofridos (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_goals_scored or 0) }} / {{ "%.2f"|format(form.avg_goals_conceded or 0) }}</dd>
+              <dt>Escanteios (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_corners) if form.avg_corners is not none else "—" }}</dd>
+              <dt>Cartões amarelos / vermelhos (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_yellow_cards) if form.avg_yellow_cards is not none else "—" }} / {{ "%.2f"|format(form.avg_red_cards) if form.avg_red_cards is not none else "—" }}</dd>
+              <dt>Jogos considerados</dt>
+              <dd>{{ form.games_counted }}</dd>
+            </dl>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Estatísticas — nesta competição ({{ league.name if league else '' }})</h2>
+    <div class="stats-grid">
+      {% for team, form in [(home_team, home_in_league), (away_team, away_in_league)] %}
+        <div class="stats-card">
+          <h3>{{ team.name }}</h3>
+          {% if form.games_counted == 0 %}
+            <p class="meta">Sem jogos finalizados suficientes nesta competição ainda.</p>
+          {% else %}
+            <dl>
+              <dt>Gols marcados / sofridos (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_goals_scored or 0) }} / {{ "%.2f"|format(form.avg_goals_conceded or 0) }}</dd>
+              <dt>Escanteios (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_corners) if form.avg_corners is not none else "—" }}</dd>
+              <dt>Cartões amarelos / vermelhos (média)</dt>
+              <dd>{{ "%.2f"|format(form.avg_yellow_cards) if form.avg_yellow_cards is not none else "—" }} / {{ "%.2f"|format(form.avg_red_cards) if form.avg_red_cards is not none else "—" }}</dd>
+              <dt>Jogos considerados</dt>
+              <dd>{{ form.games_counted }}</dd>
+            </dl>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>
+      Probabilidades e odds
+      {% if probability.is_placeholder %}<span class="badge-placeholder">EXEMPLO — fase 2</span>{% endif %}
+    </h2>
+    <div class="probability-panel">
+      <div class="probability-bars">
+        <div><div class="bar">{{ probability.home_win_pct }}%</div><div class="meta">{{ home_team.name }}</div></div>
+        <div><div class="bar">{{ probability.draw_pct }}%</div><div class="meta">Empate</div></div>
+        <div><div class="bar">{{ probability.away_win_pct }}%</div><div class="meta">{{ away_team.name }}</div></div>
+      </div>
+
+      <table class="odds-table">
+        <thead>
+          <tr><th>Casa</th><th>Casa (1)</th><th>Empate (X)</th><th>Fora (2)</th></tr>
+        </thead>
+        <tbody>
+          {% for bk in probability.bookmakers %}
+            <tr><td>{{ bk.bookmaker_name }}</td><td>{{ bk.home }}</td><td>{{ bk.draw }}</td><td>{{ bk.away }}</td></tr>
+          {% endfor %}
+          <tr>
+            <td><strong>Odd justa (nosso modelo)</strong></td>
+            <td><strong>{{ probability.fair_odds_home }}</strong></td>
+            <td><strong>{{ probability.fair_odds_draw }}</strong></td>
+            <td><strong>{{ probability.fair_odds_away }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      {% if probability.best_value_bet %}<p class="note">💡 {{ probability.best_value_bet }}</p>{% endif %}
+      {% if probability.arbitrage_opportunity %}<p class="note">⚖️ {{ probability.arbitrage_opportunity }}</p>{% endif %}
+      {% if probability.clv_note %}<p class="note">📈 {{ probability.clv_note }}</p>{% endif %}
+
+      {% if probability.is_placeholder %}
+        <p class="note">
+          Estes números são ilustrativos. Odds reais de múltiplas casas, value
+          betting, arbitragem (surebet) e CLV exigem um provedor de odds pago
+          (ver README) — a estrutura já está pronta para ligar assim que a
+          chave for configurada.
+        </p>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}

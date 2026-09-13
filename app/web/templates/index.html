@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Jogos de hoje — Futebol Stats{% endblock %}
+{% block body %}
+<header class="top">
+  <h1>⚽ Futebol Stats</h1>
+  <p>Jogos de {{ today.strftime('%d/%m/%Y') }} · horários em UTC</p>
+</header>
+<main>
+  <div class="filters">
+    <a href="/" class="{{ 'active' if not active_filter else '' }}">Todos os jogos</a>
+    {% for key, (metric, label) in filters.items() %}
+      <a href="/?filtro={{ key }}" class="{{ 'active' if active_filter == key else '' }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+
+  {% if ranking %}
+    <div class="stats-card" style="margin-bottom: 24px;">
+      <h3>{{ ranking.label }} (últimos 5 jogos finalizados)</h3>
+      {% if ranking.items %}
+        <ol class="ranking-list">
+          {% for item in ranking.items %}
+            <li><span>{{ item.team_name }}</span><span>{{ "%.2f"|format(item.average) }}</span></li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="meta">Ainda não há jogos finalizados suficientes para calcular este ranking.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if has_any_match %}
+    {% for league_name, matches in matches_by_league.items() %}
+      <section class="league-block">
+        <h2>{{ league_name }}</h2>
+        {% for match in matches %}
+          <a class="match-card" href="/jogos/{{ match.id }}">
+            <div class="match-row">
+              <span class="teams">{{ match.home.name if match.home else '?' }} x {{ match.away.name if match.away else '?' }}</span>
+              {% if match.status == 'finished' %}
+                <span class="score">{{ match.home_score }} - {{ match.away_score }}</span>
+              {% else %}
+                <span class="meta">{{ match.kickoff_utc.strftime('%H:%M') }}</span>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </section>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <p><strong>Nenhum jogo encontrado para hoje ainda.</strong></p>
+      <p class="meta">
+        Isso é esperado se a ingestão diária ainda não rodou ou se a chave da
+        API-Football não foi configurada. Confira o <code>.env</code> e veja o
+        README para rodar a coleta manualmente.
+      </p>
+    </div>
+  {% endif %}
+</main>
+{% endblock %}
