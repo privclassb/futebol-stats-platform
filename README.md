@@ -4,7 +4,7 @@ Plataforma de análises estatísticas para apostas esportivas em futebol (MVP).
 
 ## O que já funciona
 
-- Coleta diária de jogos de 6 campeonatos (Premier League, La Liga, Serie A, Primeira Liga, Bundesliga, Brasileirão) via [API-Football](https://www.api-football.com/).
+- Coleta diária de jogos de 8 competições (Premier League, La Liga, Serie A, Primeira Liga, Bundesliga, Brasileirão, Champions League, Libertadores) via [API-Football](https://www.api-football.com/).
 - Estatísticas de time e jogador (últimos 5 jogos + do campeonato).
 - Dashboard web com lista de jogos do dia, filtros (mais escanteios, mais cartões) e página de detalhe do confronto.
 - Estrutura de banco pronta para odds/probabilidades (fase 2) — hoje exibida com dados de exemplo até um provedor de odds pago ser configurado.

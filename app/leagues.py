@@ -25,6 +25,8 @@ LEAGUES: list[LeagueConfig] = [
     LeagueConfig("primeira_liga", "Primeira Liga", "Portugal", 94, calendar_season=False),
     LeagueConfig("bundesliga", "Bundesliga", "Alemanha", 78, calendar_season=False),
     LeagueConfig("brasileirao", "Brasileirão Série A", "Brasil", 71, calendar_season=True),
+    LeagueConfig("champions_league", "UEFA Champions League", "Europa", 2, calendar_season=False),
+    LeagueConfig("libertadores", "CONMEBOL Libertadores", "América do Sul", 13, calendar_season=True),
 ]
 
 

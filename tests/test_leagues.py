@@ -18,9 +18,10 @@ class SeasonForTests(unittest.TestCase):
         self.assertEqual(season_for(brasileirao, date(2026, 2, 1)), 2026)
         self.assertEqual(season_for(brasileirao, date(2026, 11, 1)), 2026)
 
-    def test_all_six_mvp_leagues_are_configured(self):
-        self.assertEqual(len(LEAGUES), 6)
-        self.assertEqual(len({l.api_football_id for l in LEAGUES}), 6)
+    def test_all_mvp_leagues_are_configured_without_duplicates(self):
+        self.assertEqual(len(LEAGUES), 8)
+        self.assertEqual(len({l.api_football_id for l in LEAGUES}), 8)
+        self.assertEqual(len({l.slug for l in LEAGUES}), 8)
 
 
 if __name__ == "__main__":

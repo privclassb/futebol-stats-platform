@@ -23,6 +23,8 @@ TEAM_NAMES = {
     "primeira_liga": ["Benfica", "Porto", "Sporting", "Braga"],
     "bundesliga": ["Bayern de Munique", "Borussia Dortmund", "RB Leipzig", "Bayer Leverkusen"],
     "brasileirao": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians"],
+    "champions_league": ["Manchester City", "Real Madrid", "Bayern de Munique", "PSG"],
+    "libertadores": ["Flamengo", "River Plate", "Palmeiras", "Boca Juniors"],
 }
 
 
