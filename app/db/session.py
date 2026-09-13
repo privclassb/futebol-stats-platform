@@ -5,7 +5,8 @@ from app import models  # noqa: F401  (garante que todos os modelos sejam regist
 
 settings = get_settings()
 
-engine = create_async_engine(settings.database_url, echo=False)
+connect_args = {"ssl": True} if settings.database_ssl else {}
+engine = create_async_engine(settings.database_url, echo=False, connect_args=connect_args)
 
 async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
 

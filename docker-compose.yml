@@ -16,12 +16,6 @@ services:
       timeout: 5s
       retries: 10
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-
   app:
     build: .
     restart: unless-stopped
@@ -30,8 +24,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
     ports:
       - "8000:8000"
     volumes:
