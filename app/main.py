@@ -24,3 +24,8 @@ app = FastAPI(title="Futebol Stats Platform", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/web/static"), name="static")
 app.include_router(admin_router)
 app.include_router(web_router)
+
+
+@app.get("/healthz")
+async def healthz() -> dict[str, str]:
+    return {"status": "ok"}
